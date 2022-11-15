@@ -35,6 +35,7 @@ module.exports = {
         tsx: 'never',
       },
     ],
+    'object-curly-newline': 'off',
   },
   settings: {
     'import/resolver': {
