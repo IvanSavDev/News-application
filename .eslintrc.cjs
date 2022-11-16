@@ -36,6 +36,8 @@ module.exports = {
       },
     ],
     'object-curly-newline': 'off',
+    'import/prefer-default-export': 'off',
+    'implicit-arrow-linebreak': 'off',
   },
   settings: {
     'import/resolver': {
