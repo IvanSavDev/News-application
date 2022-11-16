@@ -1,11 +1,11 @@
 import axios from 'axios';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { RootState } from '../store';
 import { addComments, addNews } from '../store/newsSlice';
-import { formatingDate } from '../utils/utils';
+import { calculateCommentsCount, getFullDate } from '../utils/utils';
 import { Comment, News } from '../types';
 import { testNews, testObj } from '../testObj';
 import Comments from './Comments';
@@ -15,6 +15,7 @@ const Article = styled.article`
   padding: 15px;
   background-color: #16181c;
   color: 'white';
+  box-shadow: 0px 0px 6px 3px white;
 `;
 
 const getComments = async (idsComments: Number[]) => {
@@ -37,14 +38,43 @@ const getComments = async (idsComments: Number[]) => {
 };
 
 const Header = styled.h2`
-  margin-bottom: 10px;
+  grid-area: title;
+  display: inline-block;
+  align-self: start;
 `;
 
 const List = styled.ul`
+  grid-area: list;
   display: flex;
   flex-direction: column;
   gap: 5px;
+  padding: 0;
+`;
+
+const CommentTitle = styled.h3`
+  margin-bottom: 10px;
+`;
+
+const WrapperNews = styled.div`
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    'button title'
+    '. list';
+  gap: 10px;
   margin-bottom: 15px;
+`;
+
+const ButtonBack = styled(Link)`
+  grid-area: button;
+  align-self: center;
+  border: 1px solid white;
+  padding: 5px 10px;
+
+  &:active {
+    transform: scale(0.9);
+  }
 `;
 
 const NewsPage = () => {
@@ -130,19 +160,26 @@ const NewsPage = () => {
     return <div>новость не найдена</div>;
   }
 
-  const { title, by, time, kids, url } = currentNews;
+  const { title, by, time, url } = currentNews;
 
   return (
     <Article>
-      <Header>{title}</Header>
-      <List>
-        <li>{`Author: ${by}`}</li>
-        <li>{`Date: ${formatingDate(time)}`}</li>
-        <li>{`Url: ${url}`}</li>
-        <li>{`Comments count: ${kids.length}`}</li>
-      </List>
-      <h2>Comments</h2>
-      {comments[id] && <Comments comments={comments[id]} padding={5} />}
+      <WrapperNews>
+        <ButtonBack to="/">{'<'}</ButtonBack>
+        <Header>{title}</Header>
+        <List>
+          <li>{`Author: ${by}`}</li>
+          <li>{`Publication date: ${getFullDate(time)}`}</li>
+          <li>
+            {'URL: '}
+            <a href={url}>{url}</a>
+          </li>
+          <li>{`Comments count: ${calculateCommentsCount(comments[id])}`}</li>
+        </List>
+      </WrapperNews>
+
+      <CommentTitle>Comments</CommentTitle>
+      {comments[id] && <Comments comments={comments[id]} padding={0} />}
     </Article>
   );
 };
