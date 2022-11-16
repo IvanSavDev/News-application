@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
+// import axios from 'axios';
+import styled from 'styled-components';
+import { testNews } from '../testObj';
+
 import NewsCard from './NewsCard';
 import { RootState } from '../store';
 import { addNews } from '../store/newsSlice';
-import { News } from '../types';
-import { Box } from '@mui/material';
+// import { News } from '../types';
+
+const Header = styled.h1`
+  text-align: center;
+`;
 
 const MainPage = () => {
   const [numbersHistory, setNumbersHistory] = useState<Number[] | []>([]);
@@ -35,33 +41,14 @@ const MainPage = () => {
         // }
         // const result = await Promise.allSettled(responses);
 
-        // const successResponses = result.filter(
+        // const successfulResponses = result.filter(
         //   ({ status }) => status === 'fulfilled'
         // );
-        // const listNews = successResponses.map(
+        // const listNews = successfulResponses.map(
         //   (res) => (res as PromiseFulfilledResult<{ data: News }>).value.data
         // );
 
-        dispatch(
-          addNews([
-            {
-              by: 'dhouston',
-              descendants: 71,
-              id: 8863,
-              kids: [
-                8952, 9224, 8917, 8884, 8887, 8943, 8869, 8958, 9005, 9671,
-                8940, 9067, 8908, 9055, 8865, 8881, 8872, 8873, 8955, 10403,
-                8903, 8928, 9125, 8998, 8901, 8902, 8907, 8894, 8878, 8870,
-                8980, 8934, 8876,
-              ],
-              score: 111,
-              time: 1175714200,
-              title: 'My YC app: Dropbox - Throw away your USB drive',
-              type: 'story',
-              url: 'http://www.getdropbox.com/u/2/screencast.html',
-            },
-          ])
-        );
+        dispatch(addNews(testNews));
       };
       loadNews();
     }
@@ -69,12 +56,11 @@ const MainPage = () => {
 
   return (
     <>
-      <Box component="h1" sx={{ textAlign: 'center' }}>
-        News
-      </Box>
-      {news.map(({ title, score, by, time }) => (
+      <Header>News</Header>
+      {news.map(({ title, score, by, time, id }) => (
         <NewsCard
-          key={title}
+          id={id}
+          key={id}
           title={title}
           score={score}
           author={by}
