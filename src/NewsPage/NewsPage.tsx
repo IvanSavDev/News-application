@@ -4,11 +4,9 @@ import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { RootState } from '../store';
 import { addNews } from '../store/newsSlice';
-import { addComments, deleteComments } from '../store/commentsSlice';
-import { getFullDate, getComments } from '../utils/utils';
-import { testNews, testObj2 } from '../testObj';
-import CommentCard from './CommentCard';
-import ButtonReload from './ButtonReload';
+import { getFullDate } from '../utils/utils';
+import { testNews } from '../testObj';
+import Comments from './Comments';
 
 const Article = styled.article`
   max-width: 760px;
@@ -30,10 +28,6 @@ const List = styled.ul`
   flex-direction: column;
   gap: 5px;
   padding: 0;
-`;
-
-const CommentTitle = styled.h3`
-  display: inline-block;
 `;
 
 const WrapperNews = styled.div`
@@ -58,20 +52,10 @@ const ButtonBack = styled(Link)`
   }
 `;
 
-const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-`;
-
 const NewsPage = () => {
   const { id } = useParams<{ id: string }>();
   const newsId = Number(id);
   const { entities: news } = useSelector((state: RootState) => state.news);
-  const { entities: comments } = useSelector(
-    (state: RootState) => state.comments
-  );
   const dispatch = useDispatch();
 
   const currentNews = news.find((oneNews) => oneNews.id === newsId);
@@ -81,18 +65,6 @@ const NewsPage = () => {
       dispatch(addNews(testNews));
     }
   }, []);
-
-  useEffect(() => {
-    if (currentNews && !comments[newsId]) {
-      const loadComments = async () => {
-        const loadedComments = await getComments(currentNews.kids);
-        dispatch(addComments({ id: newsId, comments: loadedComments }));
-      };
-
-      loadComments();
-      // dispatch(addComments({ id: newsId, comments: testObj2 }));
-    }
-  }, [currentNews, comments[newsId]]);
 
   if (!currentNews) {
     return <div>новость не найдена</div>;
@@ -115,14 +87,7 @@ const NewsPage = () => {
           <li>{`Comments count: ${descendants}`}</li>
         </List>
       </WrapperNews>
-      <Wrapper>
-        <CommentTitle>Comments</CommentTitle>
-        <ButtonReload action={() => dispatch(deleteComments())} />
-      </Wrapper>
-      {comments[newsId] &&
-        comments[newsId].map((comment) => (
-          <CommentCard key={comment.id} comment={comment} padding={0} />
-        ))}
+      <Comments id={newsId} news={currentNews} />
     </Article>
   );
 };

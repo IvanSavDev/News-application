@@ -1,53 +1,60 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { CommentWithKids } from '../types';
-import { getShortDate } from '../utils/utils';
+import { RootState } from '../store';
+import { addComments, deleteComments } from '../store/commentsSlice';
+// import { getComments } from '../utils/utils';
+import { testObj2 } from '../testObj';
+import CommentCard from './CommentCard';
+import ButtonReload from './ButtonReload';
+import { News } from '../types';
 
-const Container = styled.div`
-  border: 1px solid white;
-  padding: 15px;
-  margin-bottom: 15px;
-`;
-
-const Author = styled.h3`
+const CommentTitle = styled.h3`
   display: inline-block;
-  margin-right: 10px;
-`;
-
-const Date = styled.span`
-  color: gray;
-`;
-
-type Props = {
-  comments: CommentWithKids[];
-  padding: number;
-};
-
-const IndentComments = styled.div<{ padding: number }>`
-  padding-left: ${(props) => `${props.padding}px`};
-
-  word-break: break-all;
 `;
 
 const Wrapper = styled.div`
-  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 `;
 
-const Comments = ({ comments, padding }: Props) => (
-  <IndentComments padding={padding}>
-    {comments.map(({ id, by, text, time, kids }) => (
-      <React.Fragment key={id}>
-        <Container>
-          <Wrapper>
-            <Author>{by}</Author>
-            <Date>{getShortDate(time)}</Date>
-          </Wrapper>
-          <p>{text}</p>
-        </Container>
-        {kids ? <Comments comments={kids} padding={padding + 10} /> : ''}
-      </React.Fragment>
-    ))}
-  </IndentComments>
-);
+type Props = {
+  id: number;
+  news: News;
+};
+
+const Comments = ({ id, news }: Props) => {
+  const { entities: comments } = useSelector(
+    (state: RootState) => state.comments
+  );
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (news && !comments[id]) {
+      // const loadComments = async () => {
+      //   const loadedComments = await getComments(news.kids);
+      //   dispatch(addComments({ id, comments: loadedComments }));
+      // };
+
+      // loadComments();
+      dispatch(addComments({ id, comments: testObj2 }));
+    }
+  }, [news, comments[id]]);
+
+  return (
+    <>
+      <Wrapper>
+        <CommentTitle>Comments</CommentTitle>
+        <ButtonReload action={() => dispatch(deleteComments())} />
+      </Wrapper>
+      {comments[id] &&
+        comments[id].map((comment) => (
+          <CommentCard key={comment.id} comment={comment} padding={0} />
+        ))}
+    </>
+  );
+};
 
 export default Comments;
