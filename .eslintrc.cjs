@@ -38,7 +38,11 @@ module.exports = {
     'object-curly-newline': 'off',
     'import/prefer-default-export': 'off',
     'implicit-arrow-linebreak': 'off',
+    'comma-dangle': 'off',
+    'operator-linebreak': 'off',
+    'function-paren-newline': 'off',
   },
+  ignorePatterns: ['vite.config.ts', 'node_modules/*'],
   settings: {
     'import/resolver': {
       node: {
