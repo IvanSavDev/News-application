@@ -1,14 +1,14 @@
-import axios from 'axios';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { RootState } from '../store';
-import { addComments, addNews } from '../store/newsSlice';
-import { calculateCommentsCount, getFullDate } from '../utils/utils';
-import { Comment, News } from '../types';
-import { testNews, testObj } from '../testObj';
-import Comments from './Comments';
+import { addNews } from '../store/newsSlice';
+import { addComments, deleteComments } from '../store/commentsSlice';
+import { getFullDate, getComments } from '../utils/utils';
+import { testNews, testObj2 } from '../testObj';
+import CommentCard from './CommentCard';
+import ButtonReload from './ButtonReload';
 
 const Article = styled.article`
   max-width: 760px;
@@ -17,25 +17,6 @@ const Article = styled.article`
   color: 'white';
   box-shadow: 0px 0px 6px 3px white;
 `;
-
-const getComments = async (idsComments: Number[]) => {
-  const requestes = idsComments.map((idComment) =>
-    axios.get(
-      `https://hacker-news.firebaseio.com/v0/item/${idComment}.json?print=pretty`
-    )
-  );
-
-  const responses = await Promise.allSettled(requestes);
-  const successfulResponses = responses.filter(
-    ({ status }) => status === 'fulfilled'
-  );
-
-  const comments = successfulResponses.map(
-    (res) => (res as PromiseFulfilledResult<{ data: Comment }>).value.data
-  );
-
-  return comments;
-};
 
 const Header = styled.h2`
   grid-area: title;
@@ -52,7 +33,7 @@ const List = styled.ul`
 `;
 
 const CommentTitle = styled.h3`
-  margin-bottom: 10px;
+  display: inline-block;
 `;
 
 const WrapperNews = styled.div`
@@ -77,12 +58,23 @@ const ButtonBack = styled(Link)`
   }
 `;
 
+const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+`;
+
 const NewsPage = () => {
-  const { id } = useParams();
-  const { news, comments } = useSelector((state: RootState) => state.news);
+  const { id } = useParams<{ id: string }>();
+  const newsId = Number(id);
+  const { entities: news } = useSelector((state: RootState) => state.news);
+  const { entities: comments } = useSelector(
+    (state: RootState) => state.comments
+  );
   const dispatch = useDispatch();
 
-  const currentNews = news.find((oneNews) => oneNews.id === +id);
+  const currentNews = news.find((oneNews) => oneNews.id === newsId);
 
   useEffect(() => {
     if (!currentNews) {
@@ -91,76 +83,22 @@ const NewsPage = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(addComments({ id, comments: testObj.kids }));
-    if (false) {
-      if (!comments[id]) {
-        const loadComments = async () => {
-          // const response = await axios.get(
-          //   `https://hacker-news.firebaseio.com/v0/item/${idNews}.json?print=pretty`
-          // );
+    if (currentNews && !comments[newsId]) {
+      const loadComments = async () => {
+        const loadedComments = await getComments(currentNews.kids);
+        dispatch(addComments({ id: newsId, comments: loadedComments }));
+      };
 
-          const getKidsComments = async (comment: Comment | News) => {
-            const copyComment = JSON.parse(JSON.stringify(comment));
-            const kidsComments = copyComment?.kids;
-
-            if (!kidsComments) {
-              return comment;
-            }
-
-            // const requestes = kidsComments.map((idComment) =>
-            //   axios.get(
-            //     `https://hacker-news.firebaseio.com/v0/item/${idComment}.json?print=pretty`
-            //   )
-            // );
-
-            // const responses = await Promise.allSettled(requestes);
-            // const successfulResponses = responses.filter(
-            //   ({ status }) => status === 'fulfilled'
-            // );
-
-            // const comments = successfulResponses.map(
-            //   (res) => (res as PromiseFulfilledResult<{ data: Comment }>).value.data
-            // );
-
-            const comments = await getComments(kidsComments);
-
-            const loadRestComments = comments.map((com) =>
-              getKidsComments(com)
-            );
-
-            const result = await Promise.allSettled(loadRestComments);
-
-            const successfulResult = result.filter(
-              (res) => res.status === 'fulfilled'
-            );
-
-            const kids = successfulResult.map(
-              (r) => (r as PromiseFulfilledResult<{ data: Comment }>).value
-            );
-
-            copyComment.kids = kids;
-
-            return copyComment;
-          };
-
-          const result = await getKidsComments(currentNews);
-          return result;
-          // dispatch(addComments({ id: idNews, comments: result }));
-        };
-
-        loadComments().then((comments) => {
-          console.log(comments);
-          dispatch(addComments({ id: comments.id, comments: comments.kids }));
-        });
-      }
+      loadComments();
+      // dispatch(addComments({ id: newsId, comments: testObj2 }));
     }
-  }, []);
+  }, [currentNews, comments[newsId]]);
 
   if (!currentNews) {
     return <div>новость не найдена</div>;
   }
 
-  const { title, by, time, url } = currentNews;
+  const { title, by, time, url, descendants } = currentNews;
 
   return (
     <Article>
@@ -174,12 +112,17 @@ const NewsPage = () => {
             {'URL: '}
             <a href={url}>{url}</a>
           </li>
-          <li>{`Comments count: ${calculateCommentsCount(comments[id])}`}</li>
+          <li>{`Comments count: ${descendants}`}</li>
         </List>
       </WrapperNews>
-
-      <CommentTitle>Comments</CommentTitle>
-      {comments[id] && <Comments comments={comments[id]} padding={0} />}
+      <Wrapper>
+        <CommentTitle>Comments</CommentTitle>
+        <ButtonReload action={() => dispatch(deleteComments())} />
+      </Wrapper>
+      {comments[newsId] &&
+        comments[newsId].map((comment) => (
+          <CommentCard key={comment.id} comment={comment} padding={0} />
+        ))}
     </Article>
   );
 };
