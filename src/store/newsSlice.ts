@@ -1,35 +1,24 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { News, Comment, CommentWithKids } from '../types';
+import { News } from '../types';
 
 export interface NewsState {
-  news: News[] | [];
-  comments: {
-    [id: number]: CommentWithKids[] | [];
-  };
+  entities: News[] | [];
 }
 
 const initialState: NewsState = {
-  news: [],
-  comments: {},
+  entities: [],
 };
 
 export const newsSlice = createSlice({
-  name: 'newsList',
+  name: 'news',
   initialState,
   reducers: {
     addNews: (state, action: PayloadAction<News[]>) => {
-      state.news = [...action.payload];
-    },
-    addComments: (
-      state,
-      action: PayloadAction<{ id: number; comments: CommentWithKids[] }>
-    ) => {
-      const { id, comments } = action.payload;
-      state.comments[id] = comments;
+      state.entities = [...action.payload];
     },
   },
 });
 
-export const { addNews, addComments } = newsSlice.actions;
+export const { addNews } = newsSlice.actions;
 export default newsSlice.reducer;
