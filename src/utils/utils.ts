@@ -1,10 +1,15 @@
-export const formatingDate = (seconds: number) => {
+import axios from 'axios';
+import { Comment } from '../types';
+
+export const getFullDate = (seconds: number) => {
   const milliseconds = seconds * 1000;
   const date = new Date(milliseconds);
-  return `${date.getDate()}.${date.getMonth()}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+  const [dayOfWeek, month, day, year, time] = String(date).split(' ');
+  const fullDate = `${dayOfWeek} ${month} ${day} ${year} ${time}`;
+  return fullDate;
 };
 
-export const getDate = (seconds: number) => {
+export const getShortDate = (seconds: number) => {
   if (seconds < 60) {
     return `${seconds} seconds ago`;
   }
@@ -31,4 +36,25 @@ export const getDate = (seconds: number) => {
 
   const years = month / 12;
   return `${Math.round(years)} years ago`;
+};
+
+export const getComments = async (
+  idsComments: Number[]
+): Promise<Comment[]> => {
+  const requestes = idsComments.map((idComment) =>
+    axios.get(
+      `https://hacker-news.firebaseio.com/v0/item/${idComment}.json?print=pretty`
+    )
+  );
+
+  const responses = await Promise.allSettled(requestes);
+  const successfulResponses = responses.filter(
+    ({ status }) => status === 'fulfilled'
+  );
+
+  const comments = successfulResponses.map(
+    (res) => (res as PromiseFulfilledResult<{ data: Comment }>).value.data
+  );
+
+  return comments;
 };
