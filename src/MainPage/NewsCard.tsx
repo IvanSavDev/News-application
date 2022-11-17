@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { formatingDate } from '../utils/utils';
+import { getFullDate } from '../utils/utils';
 
 type Props = {
   id: number;
@@ -11,6 +11,8 @@ type Props = {
 };
 
 const Article = styled(Link)`
+  display: flex;
+  flex-direction: column;
   max-width: 760px;
   padding: 15px;
   background-color: #16181c;
@@ -20,16 +22,30 @@ const Article = styled(Link)`
   &:active {
     transform: scale(0.95);
   }
+
+  &:hover {
+    box-shadow: 0px 0px 6px 3px white;
+  }
+`;
+
+const Header = styled.h2`
+  margin-bottom: 10px;
+`;
+
+const List = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 `;
 
 const NewsCard = ({ id, title, score, author, time }: Props) => (
   <Article to={`/news/${id}`}>
-    <h2>{title}</h2>
-    <ul>
-      <li>{`Рейтинг: ${score}`}</li>
-      <li>{`Автор: ${author}`}</li>
-      <li>{`Дата публикации: ${formatingDate(time)}`}</li>
-    </ul>
+    <Header>{title}</Header>
+    <List>
+      <li>{`Author: ${author}`}</li>
+      <li>{`Score: ${score}`}</li>
+      <li>{`Publication date: ${getFullDate(time)}`}</li>
+    </List>
   </Article>
 );
 

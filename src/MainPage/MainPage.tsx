@@ -11,11 +11,12 @@ import { addNews } from '../store/newsSlice';
 
 const Header = styled.h1`
   text-align: center;
+  margin-bottom: 10px;
 `;
 
 const MainPage = () => {
   const [numbersHistory, setNumbersHistory] = useState<Number[] | []>([]);
-  const news = useSelector((state: RootState) => state.news.news);
+  const { entities: news } = useSelector((state: RootState) => state.news);
   const dispatch = useDispatch();
 
   useEffect(() => {
