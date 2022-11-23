@@ -1,19 +1,12 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { getFullDate } from '../utils/utils';
-
-type Props = {
-  id: number;
-  title: string;
-  score: number;
-  author: string;
-  time: number;
-};
+import { getFullDate } from '../../utils/utils';
 
 const Article = styled(Link)`
   display: flex;
   flex-direction: column;
   max-width: 760px;
+  width: 100%;
   padding: 15px;
   background-color: #16181c;
   color: 'white';
@@ -37,6 +30,14 @@ const List = styled.ul`
   flex-direction: column;
   gap: 5px;
 `;
+
+type Props = {
+  id: number;
+  title: string;
+  score: number;
+  author: string;
+  time: number;
+};
 
 const NewsCard = ({ id, title, score, author, time }: Props) => (
   <Article to={`/news/${id}`}>
