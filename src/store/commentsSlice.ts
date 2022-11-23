@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Comment } from '../types';
+import { Comment } from 'src/types';
 
 export interface CommentsState {
   entities: {
