@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { Comment } from '../types';
+import { Comment, News } from 'src/types';
 
 export const getFullDate = (seconds: number) => {
   const milliseconds = seconds * 1000;
@@ -38,23 +37,18 @@ export const getShortDate = (seconds: number) => {
   return `${Math.round(years)} years ago`;
 };
 
-export const getComments = async (
-  idsComments: Number[]
-): Promise<Comment[]> => {
-  const requestes = idsComments.map((idComment) =>
-    axios.get(
-      `https://hacker-news.firebaseio.com/v0/item/${idComment}.json?print=pretty`
-    )
-  );
-
-  const responses = await Promise.allSettled(requestes);
-  const successfulResponses = responses.filter(
-    ({ status }) => status === 'fulfilled'
-  );
-
-  const comments = successfulResponses.map(
-    (res) => (res as PromiseFulfilledResult<{ data: Comment }>).value.data
-  );
-
-  return comments;
-};
+export function filterByExistence(news: News[]): News[];
+export function filterByExistence(comment: Comment[]): Comment[];
+export function filterByExistence(
+  entities: (News | Comment)[]
+): (News | Comment)[] {
+  return entities.filter((entity) => {
+    if (entity.deleted) {
+      return false;
+    }
+    if (entity.dead) {
+      return false;
+    }
+    return true;
+  });
+}
