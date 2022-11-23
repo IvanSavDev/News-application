@@ -2,12 +2,14 @@ export interface News {
   by: string;
   descendants: number;
   id: number;
-  kids: Number[];
+  kids?: Number[];
   score: number;
   time: number;
   title: string;
   type: string;
   url: string;
+  deleted?: boolean;
+  dead?: boolean;
 }
 
 export interface Comment {
@@ -18,14 +20,6 @@ export interface Comment {
   text: string;
   time: number;
   type: string;
-}
-
-export interface CommentWithKids {
-  by: string;
-  id: number;
-  kids?: CommentWithKids[];
-  parent: number;
-  text: string;
-  time: number;
-  type: string;
+  deleted?: boolean;
+  dead?: boolean;
 }
