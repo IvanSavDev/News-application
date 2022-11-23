@@ -3,7 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ['plugin:react/recommended', 'airbnb'],
+  extends: ['plugin:react/recommended', 'airbnb', 'airbnb-typescript'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
@@ -41,6 +41,8 @@ module.exports = {
     'comma-dangle': 'off',
     'operator-linebreak': 'off',
     'function-paren-newline': 'off',
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': 'error',
   },
   ignorePatterns: ['vite.config.ts', 'node_modules/*'],
   settings: {
