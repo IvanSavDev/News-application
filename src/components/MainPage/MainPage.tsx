@@ -6,12 +6,11 @@ import { RootState } from 'src/store';
 import { addSomeNews } from 'src/store/newsSlice';
 import ButtonReload from 'src/components/Buttons/ButtonReload';
 import { Statuses } from 'src/enums/enums';
-import { Loader, WrapperLoader } from 'src/components/Loader';
+import { Loader } from 'src/components/Loader';
 import Error from './Error';
 import { filterByExistence } from 'src/utils/utils';
 import { getTopNewsData, getTopNewsIds } from 'src/api/api';
 import { NEWS_COUNT_ON_PAGE } from 'src/constants/constants';
-import { testNews } from 'src/testObj';
 
 const Header = styled.header`
   display: flex;
