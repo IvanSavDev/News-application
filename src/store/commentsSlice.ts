@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Comment } from 'src/types';
+import { Comment } from 'src/types/types';
 
 export interface CommentsState {
   entities: {
@@ -23,11 +23,8 @@ export const commentsSlice = createSlice({
       const { id, comments } = action.payload;
       state.entities[id] = comments;
     },
-    deleteComments: (state) => {
-      state.entities = [];
-    },
   },
 });
 
-export const { addComments, deleteComments } = commentsSlice.actions;
+export const { addComments } = commentsSlice.actions;
 export default commentsSlice.reducer;
