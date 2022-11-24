@@ -1,1 +1,1 @@
-# test_avito
+# Deploy news application

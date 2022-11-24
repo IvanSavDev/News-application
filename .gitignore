@@ -8,10 +8,17 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
 dist-ssr
 *.local
-
+src
+public
+.eslintrc.cjs
+index.html
+package-lock.json
+package.json
+tsconfig.json
+tsconfig.node.json
+vite.config.ts
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
