@@ -1,4 +1,4 @@
-import { Comment, News } from 'src/types';
+import { Comment, News } from 'src/types/types';
 
 export const getFullDate = (seconds: number) => {
   const milliseconds = seconds * 1000;
