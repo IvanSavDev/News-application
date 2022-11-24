@@ -1,8 +1,7 @@
-import React from 'react';
 import styled from 'styled-components';
-import { News } from '../../types';
-import { getFullDate } from '../../utils/utils';
-import ButtonBack from '../Buttons/ButttonBack';
+import { News } from 'src/types/types';
+import { getFullDate } from 'src/utils/utils';
+import ButtonBack from 'src/components/Buttons/ButttonBack';
 
 const Header = styled.h2`
   grid-area: title;
@@ -29,6 +28,10 @@ const WrapperNews = styled.div`
   margin-bottom: 15px;
 `;
 
+const URL = styled.a`
+  word-break: break-all;
+`;
+
 type Props = {
   news: News;
 };
@@ -44,7 +47,9 @@ const NewsCard = ({ news }: Props) => {
         <li>{`Publication date: ${getFullDate(time)}`}</li>
         <li>
           {'URL: '}
-          <a href={url}>{url}</a>
+          <URL target={'_blank'} href={url}>
+            {url}
+          </URL>
         </li>
         <li>{`Comments count: ${descendants}`}</li>
       </List>

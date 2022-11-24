@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'src/store';
 import { addComments } from 'src/store/commentsSlice';
-import { Comment } from 'src/types';
+import { Comment } from 'src/types/types';
 import { getShortDate } from 'src/utils/utils';
-import { getComments } from 'src/api';
-import { Statuses } from 'src/Enums/Enums';
+import { getComments } from 'src/api/api';
+import { Statuses } from 'src/enums/enums';
+import Error from './Error';
 
 const Container = styled.li<{ isKids: boolean; disabled: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   border: 1px solid white;
   padding: 15px;
   margin-bottom: 15px;
+  width: 100%;
   cursor: ${(props) => (props.isKids ? 'pointer' : 'auto')};
   pointer-events: ${(props) => (props.disabled ? 'none' : 'auto')};
   &:hover {
@@ -22,7 +27,6 @@ const Container = styled.li<{ isKids: boolean; disabled: boolean }>`
 const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 5px;
 `;
 
 const Author = styled.h3`
@@ -35,6 +39,7 @@ const Date = styled.span`
 `;
 
 const IndentComments = styled.ul<{ padding: number }>`
+  width: 100%;
   padding-left: ${(props) => `${props.padding}px`};
 `;
 
@@ -42,37 +47,38 @@ const Text = styled.p`
   overflow-wrap: break-word;
 `;
 
-const Error = styled.span`
-  color: red;
+const CommentsCount = styled.p`
+  color: gray;
+  text-align: right;
 `;
 
 type Props = {
-  padding: number;
+  padding?: number;
   comment: Comment;
 };
 
-const CommentCard = ({ comment, padding }: Props) => {
+const CommentCard = ({ comment, padding = 0 }: Props) => {
+  const [status, setStatus] = useState(Statuses.Fulfilled);
   const [showComments, setShowComments] = useState(false);
-  const dispatch = useDispatch();
-  const [status, setStatus] = useState(Statuses.fulfilled);
   const { entities: comments } = useSelector(
     (state: RootState) => state.comments
   );
-  const indent = 15;
+  const dispatch = useDispatch();
+  const indentCommentCard = 15;
 
   const { by, time, id, text, kids } = comment;
 
   const handleClick = async () => {
     setShowComments((previous) => !previous);
     if (kids && !comments[id]) {
-      setStatus(Statuses.pending);
       try {
+        setStatus(Statuses.Pending);
         const childComments = await getComments(kids);
         dispatch(addComments({ id, comments: childComments }));
-        setStatus(Statuses.fulfilled);
+        setStatus(Statuses.Fulfilled);
         setShowComments(true);
       } catch {
-        setStatus(Statuses.rejected);
+        setStatus(Statuses.Rejected);
       }
     }
   };
@@ -82,26 +88,27 @@ const CommentCard = ({ comment, padding }: Props) => {
       <Container
         isKids={Boolean(kids)}
         onClick={handleClick}
-        disabled={status === Statuses.pending}
+        disabled={status === Statuses.Pending}
       >
         <Wrapper>
           <div>
             <Author>{by}</Author>
             <Date>{getShortDate(time)}</Date>
           </div>
-          {status === Statuses.rejected && (
-            <Error>Error loading comments, please try again</Error>
-          )}
+          {status === Statuses.Rejected && <Error />}
         </Wrapper>
         <Text>{text}</Text>
+        <CommentsCount>{`Comments: ${
+          comment.kids ? comment.kids.length : 0
+        }`}</CommentsCount>
       </Container>
       {showComments && comments[id] && (
-        <IndentComments padding={indent}>
+        <IndentComments padding={indentCommentCard}>
           {comments[id].map((child) => (
             <CommentCard
               key={child.id}
-              padding={padding + indent}
               comment={child}
+              padding={padding + indentCommentCard}
             />
           ))}
         </IndentComments>
