@@ -1,5 +1,11 @@
 @import url('./normalize.css');
 
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 400;
+  src: url('../fonts/Roboto-Regular.ttf');
+}
+
 * {
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
