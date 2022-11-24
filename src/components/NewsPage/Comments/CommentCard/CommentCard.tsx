@@ -15,8 +15,8 @@ const Container = styled.li<{ isKids: boolean; disabled: boolean }>`
   gap: 8px;
   border: 1px solid white;
   padding: 15px;
-  margin-bottom: 15px;
   width: 100%;
+  margin-bottom: 15px;
   cursor: ${(props) => (props.isKids ? 'pointer' : 'auto')};
   pointer-events: ${(props) => (props.disabled ? 'none' : 'auto')};
   &:hover {

@@ -7,7 +7,7 @@ import CommentCard from './CommentCard/CommentCard';
 import ButtonReload from 'src/components/Buttons/ButtonReload';
 import { News } from 'src/types/types';
 import { Statuses } from 'src/enums/enums';
-import { Loader } from 'src/components/Loader';
+import { Loader, WrapperLoader } from 'src/components/Loader';
 import Error from './Error';
 import { getComments, getNews } from 'src/api/api';
 import { filterByExistence } from 'src/utils/utils';
@@ -23,8 +23,6 @@ const WrapperComments = styled.ul`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  justify-content: center;
-  align-items: center;
 `;
 
 type Props = {
@@ -81,7 +79,6 @@ const Comments = ({ newsId, news }: Props) => {
         const loadedComments = await getComments(news.kids, controller);
         dispatch(addComments({ id: newsId, comments: loadedComments }));
       }
-
       setStatus(Statuses.Fulfilled);
     } catch {
       setStatus(Statuses.Rejected);
@@ -97,18 +94,23 @@ const Comments = ({ newsId, news }: Props) => {
           disabled={status === Statuses.Pending}
         />
       </Wrapper>
-      <WrapperComments>
-        {status === Statuses.Pending && <Loader />}
-        {status === Statuses.Rejected && <Error />}
-        {status === Statuses.Fulfilled &&
-          newsComments &&
-          filterByExistence(newsComments).map((comment) => (
+
+      {status === Statuses.Pending && (
+        <WrapperLoader>
+          <Loader />
+        </WrapperLoader>
+      )}
+      {status === Statuses.Rejected && <Error />}
+      {status === Statuses.Fulfilled && newsComments && (
+        <WrapperComments>
+          {filterByExistence(newsComments).map((comment) => (
             <CommentCard key={comment.id} comment={comment} />
           ))}
-        {status === Statuses.Fulfilled && !newsComments && (
-          <p>Comments not found</p>
-        )}
-      </WrapperComments>
+        </WrapperComments>
+      )}
+      {status === Statuses.Fulfilled && !newsComments && (
+        <p>Comments not found</p>
+      )}
     </>
   );
 };
